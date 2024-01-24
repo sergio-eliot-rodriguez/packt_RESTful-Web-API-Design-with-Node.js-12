@@ -1,0 +1,34 @@
+{
+  "name": "restful-web-api-design-with-node.js-12",
+  "version": "1.0.0",
+  "description": "Packt Publishing video course on RESTful Web API Design with Node.js 12",
+  "main": "server.js",
+  "scripts": {
+    "start": "pm2-runtime start ecosystem.config.js --env production",
+    "debug": "DEBUG=* node -r esm .",
+    "dev": "node -r esm ./node_modules/nodemon/bin/nodemon.js .",
+    "test": "mocha --require esm ./test/*"
+  },
+  "mocha": {
+    "require": [
+      "esm"
+    ]
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "esm": "^3.2.25",
+    "express": "^4.17.3",
+    "express-basic-auth": "^1.2.0",
+    "helmet": "^3.21.2",
+    "pm2": "^5.2.2"
+  },
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "esm": "^3.2.25",
+    "mocha": "^9.2.2",
+    "nodemon": "^1.19.4",
+    "supertest": "^4.0.2"
+  }
+}
