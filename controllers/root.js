@@ -5,7 +5,7 @@ const getRequestData = req => ({
     host: req.hostname,
     baseUrl: req.baseUrl,
     ip: req.ip,
-    message: `Handling ${req.method} request`
+    message: `Handling ${req.method} request YEAH!! THIS IS COOL`
   });
   
   const getRoot = async (req, res, next) =>{
