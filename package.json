@@ -1,6 +1,9 @@
 {
   "name": "restful-web-api-design-with-node.js-12",
   "version": "1.0.0",
+  "engines": {
+    "node": "12.10.0"
+  },  
   "description": "Packt Publishing video course on RESTful Web API Design with Node.js 12",
   "main": "server.js",
   "scripts": {
