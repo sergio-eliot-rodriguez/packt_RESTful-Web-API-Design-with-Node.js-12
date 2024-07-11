@@ -1,0 +1,29 @@
+**** ESTOS ERRORES OCURRIORON DURANTE INSTALACION
+**** ESPERO NO CAUSEN UN PROBLEMA CONFORME AVANZO
+
+PS C:\Users\sergi\OneDrive\Escritorio\packtshit\RESTful-Web-API-Design-with-Node.js-12\Cygwin_generated> npm i -D supertest mocha
+npm WARN deprecated glob@8.1.0: Glob versions prior to v9 are no longer supported
+npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@~2.3.2 (node_modules\chokidar\node_modules\fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@2.3.3: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
+npm WARN actual-restful-web-api-design-with-node.js-12@1.0.0 No description
+npm WARN actual-restful-web-api-design-with-node.js-12@1.0.0 No repository field.
+
++ mocha@10.6.0
++ supertest@7.0.0
+added 63 packages from 51 contributors and audited 230 packages in 5.077s
+found 0 vulnerabilities
+
+PS C:\Users\sergi\OneDrive\Escritorio\packtshit\RESTful-Web-API-Design-with-Node.js-12\Cygwin_generated> ./node_modules/.bin/eslint --init
+You can also run this command directly using 'npm init @eslint/config@latest'.
+npx: installed 11 in 2.853s
+C:\Users\sergi\AppData\Roaming\npm-cache\_npx\19644\node_modules\@eslint\create-config\bin\create-config.js:8
+import { ConfigGenerator } from "../lib/config-generator.js";
+       ^
+
+SyntaxError: Unexpected token {
+    at Module._compile (internal/modules/cjs/loader.js:872:18)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:947:10)
+    at Module.load (internal/modules/cjs/loader.js:790:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:703:12)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:999:10)
+    at internal/main/run_main_module.js:17:11

@@ -1,0 +1,23 @@
+{
+  "name": "actual-restful-web-api-design-with-node.js-12",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "eslint": "^9.6.0",
+    "esm": "^3.2.25",
+    "express": "^4.19.2",
+    "express-basic-auth": "^1.2.1",
+    "helmet": "^7.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^10.6.0",
+    "supertest": "^7.0.0"
+  }
+}
