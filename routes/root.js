@@ -5,15 +5,15 @@ import { AsyncWrapper } from "../utils";
 const rootRouter = Router();
 
 // GET /v1/
-rootRouter.get("/", AsyncWrapper(rootControllers.getRoot));
+rootRouter.get("/", rootControllers.getRoot);
 
 // POST /v1/
-rootRouter.post("/", AsyncWrapper(rootControllers.postRoot));
+rootRouter.post("/", rootControllers.postRoot);
 
 // PUT /v1/
-rootRouter.put("/", AsyncWrapper(rootControllers.putRoot));
+rootRouter.put("/",rootControllers.putRoot);
 
 // DELETE /v1/
-rootRouter.delete("/", AsyncWrapper(rootControllers.deleteRoot));
+rootRouter.delete("/", rootControllers.deleteRoot);
 
 export { rootRouter };
