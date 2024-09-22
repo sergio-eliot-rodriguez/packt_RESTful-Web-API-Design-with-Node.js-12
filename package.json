@@ -8,10 +8,10 @@
   "description": "Packt Publishing video course on RESTful Web API Design with Node.js 12",
   "main": "server.js",
   "scripts": {
-    "start": "pm2-runtime start ecosystem.config.js --env production",
+    "start": "node -r esm .",
     "debug": "DEBUG=* node -r esm .",
     "dev": "node -r esm ./node_modules/nodemon/bin/nodemon.js .",
-    "test": "mocha --require esm ./test/*"
+    "test": "mocha ./test/*"
   },
   "mocha": {
     "require": [
@@ -30,7 +30,7 @@
   "devDependencies": {
     "eslint": "^6.5.1",
     "esm": "^3.2.25",
-    "mocha": "^9.2.2",
+    "mocha": "^8.3.0",
     "nodemon": "^1.19.4",
     "supertest": "^4.0.2"
   }
