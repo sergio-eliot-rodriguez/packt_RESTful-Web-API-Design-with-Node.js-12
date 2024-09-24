@@ -6,7 +6,7 @@
   "scripts": {
     "start8": "node -r esm .",
     "start": "pm2-runtime start ecosystem.config.js --env production",
-    "start:dev": "node -r esm ./node_modules/nodemon/bin/nodemon.js .",
+    "start:dev": "set NODE_ENV=development && node -r esm ./node_modules/nodemon/bin/nodemon.js .",
     "debug": "DEBUG=* node -r esm .",
     "dev": "node -r esm ./node_modules/nodemon/bin/nodemon.js .",
     "test": "mocha ./test/*"
@@ -27,6 +27,7 @@
     "@types/helmet": "^4.0.0",
     "@types/node": "^22.5.5",
     "eslint": "^6.5.1",
+    "faker": "^4.1.0",
     "mocha": "^8.3.0",
     "nodemon": "^1.19.4",
     "supertest": "^4.0.2"

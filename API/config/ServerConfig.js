@@ -33,6 +33,7 @@ export class ServerConfig {
 
     routers &&
       routers.forEach(({ baseUrl, router }) => {
+        console.log("registering router:" + baseUrl);
         this.registerRouter(baseUrl, router);
       });
 
