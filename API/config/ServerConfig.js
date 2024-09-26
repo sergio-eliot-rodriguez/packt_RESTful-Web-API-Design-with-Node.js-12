@@ -2,6 +2,7 @@ import Express, { Router } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import basicAuth from "express-basic-auth";
+import { MongoDao } from "./db";
 
 export class ServerConfig {
   #userAccounts = {
@@ -12,10 +13,10 @@ export class ServerConfig {
     this.app = Express();
     this.app.set("env", process.env.NODE_ENV);
     this.app.set("port", port);
-    this.registerCORSMiddleware();
-    this.registerHelmetMiddleware();
-    this.registerBasicAuthMiddleware();
-    this.registerJSONMiddleware();
+    this.registerCORSMiddleware()
+      .registerHelmetMiddleware()
+      .registerBasicAuthMiddleware()
+      .registerJSONMiddleware();
 
     middlewares &&
       middlewares.forEach(mdlw => {
@@ -23,9 +24,6 @@ export class ServerConfig {
       });
 
     this.app.get("/", (req, res, next) => {
-      // const er = new Error("my bad");
-      // er.statusCode = 501;
-      // throw er;
       res.json({
         message: "Server working"
       });
@@ -33,7 +31,6 @@ export class ServerConfig {
 
     routers &&
       routers.forEach(({ baseUrl, router }) => {
-        console.log("registering router:" + baseUrl);
         this.registerRouter(baseUrl, router);
       });
 
@@ -117,7 +114,7 @@ export class ServerConfig {
   registerErrorHandlingMiddleware() {
     this.app.get("env") === "development"
       ? this.registerMiddleware(
-          ({ statusCode, message, stack }, req, res, next) => {
+          ({ statusCode = 500, message, stack }, req, res, next) => {
             res.status(statusCode);
             res.json({
               statusCode,
@@ -126,16 +123,21 @@ export class ServerConfig {
             });
           }
         )
-      : this.registerMiddleware(({ statusCode, message }, req, res, next) => {
+      : this.registerMiddleware(({ statusCode = 500, message }, req, res, next) => {
           res.status(statusCode);
           res.json({ statusCode, message });
         });
     return this;
   }
 
-  listen() {
-    this.app.listen(this.port, () => {
-      console.log(`Listening on port: ${this.port}`);
-    });
+  async listen() {
+    try {
+      await new MongoDao("", "contactsdb");
+      this.app.listen(this.port, () => {
+        console.log(`Listening on port: ${this.port}`);
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
