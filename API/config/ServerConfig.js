@@ -3,6 +3,8 @@ import cors from "cors";
 import helmet from "helmet";
 import basicAuth from "express-basic-auth";
 import { MongoDao } from "./db";
+import { fakeContacts } from "../utils/contact-generator";
+import { ConfigService } from "./config-service";
 
 export class ServerConfig {
   #userAccounts = {
@@ -132,10 +134,30 @@ export class ServerConfig {
 
   async listen() {
     try {
-      await new MongoDao("", "contactsdb");
-      this.app.listen(this.port, () => {
-        console.log(`Listening on port: ${this.port}`);
-      });
+
+       
+      /*
+mongodb+srv://sergioeliot:3GTDDKlpdtwolLE4@restfulwebapidesignwith.3gmri.mongodb.net/
+      */          
+     
+     const conStr = `mongodb://${ConfigService.MONGO_LOCALHOST}/contactsdb?retryWrites=true&w=majority`;
+     console.error(conStr);
+      const conn = await new MongoDao(
+        conStr, "contactsdb");
+      if(conn){
+        const collectionName = "contacts";
+
+        // clear contacts collection
+        conn.deleteAllDocument(collectionName);
+        console.error(JSON.stringify(fakeContacts));
+        //populate the collection with contacts
+        conn.insertDocuments(collectionName, [...fakeContacts.values()]);
+
+        return this.app.listen(this.port, () => {
+          console.log(`Listening on port: ${this.port}`);
+        });
+      }
+
     } catch (error) {
       console.error(error);
     }
