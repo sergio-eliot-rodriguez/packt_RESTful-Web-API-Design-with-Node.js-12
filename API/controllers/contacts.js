@@ -1,5 +1,5 @@
 import { ObjectID } from "bson";
-import { errorHandler, fakeContacts } from "../utils";
+import { errorHandler, generateFakeContacts } from "../utils";
 import { Contact } from "../models";
 
 export const getContacts = async (req, res) => {
@@ -20,21 +20,39 @@ export const getContacts = async (req, res) => {
     html() {
       const html = [
         `<table style="border: 1px solid black;">`,
-        `<th style="border: 1px solid black; background:red;">Contact ID</th>
+        `<th style="border: 1px solid black; background:red;">BEIGN EXECUTED</th>
           <th style="border: 1px solid black; background:black; color:white;">Contact Data</th>
           `
       ];
 
-      contacts.forEach(({ _id, ...contact }) => {
+      contacts.forEach(({ _doc }) => {
+        let { _id, ...contact } = _doc;
+
+        //reorder properties
+        contact = Object.keys(contact)
+          .sort()
+          .reduce(
+            (acc, key) => ({
+              ...acc,
+              [key]: _doc[key]
+            }),
+            {
+              firstName: _doc.firstName,
+              lastName: _doc.lastName
+            }
+          );
         html.push(`
               <tr style="border: 1px solid black;">
               <td style="border: 1px solid black; background:yellow;">${_id}</td>
               <td style="border: 1px solid black;">${Object.entries(contact)
                 .map(([key, value]) => {
-                  return `<p><b>${key}</b>: ${JSON.stringify(value).replace(
-                    /"/g,
-                    ""
-                  )}</p>`;
+                  return `<div style="border: solid green 5px;"><p><b>${key}</b>: ${JSON.stringify(
+                    value,
+                    function replacer(k, v){
+                      return k === "_id" ? undefined : v;
+                    },
+                    4
+                ).replace(/"/g,"")}</p></div>`;
                 })
                 .join("\n")}</td>
               </tr>
@@ -48,7 +66,8 @@ export const getContacts = async (req, res) => {
 
 export const getContact = async (req, res, next) => {
   const contactId = req.params.id;
-  contactId || next(errorHandler("Please enter a contact ID", 422));
+  contactId || next(errorHandler("Please enter a contact ID", 400));
+  contactId.length >= 24 || next(errorHandler("Invalid contact ID", 422));
 
   const contact = await Contact.findOne({
     _id: new ObjectID(contactId)
@@ -58,11 +77,18 @@ export const getContact = async (req, res, next) => {
 
 export const postContact = async (req, res, next) => {
   const contact = req.body;
-  (contact && contact.primaryContactNumber) ||
-    next(errorHandler("Please submit valid contact", 422));
+  contact || next(errorHandler("Please submit a valid contact", 400));
+  contact.primaryContactNumber || next(errorHandler("Please submit valid contact", 422));
 
   const newContact = new Contact({ ...contact });
-  await newContact.save();
+  const { _id, _doc } = await newContact.save();
+
+  _doc && _doc.primaryContactNumber
+    ? res
+        .status(201)
+        .set("location", `/contacts/${_id}`)
+        .json({ message: "Contact created", data: _doc })
+    : next(errorHandler("No contact created"));
 
   // const result = await Contact.insertOne(contact);
 
@@ -72,26 +98,33 @@ export const postContact = async (req, res, next) => {
 };
 
 export const postContactMany = async (req, res, next) => {
-  await Contact.insertMany([...fakeContacts.values()]);
+  const n = parseInt(req.query.n);
+  n < 100 || next(errorHandler("Please enter a number less than 100", 422));
 
-  res.json({ message: "Many contacts generated" });
+  const genearatedContacts = await Contact.insertMany(generateFakeContacts(n));
+  console.log(genearatedContacts.length);
+
+  res.status(201).json(
+    { 
+      message: `${n} contacts generated`,  
+      locations: genearatedContacts.map(( { _id }) => `/contacts/${_id}`)    
+    });
 };
 
 export const putContact = async (req, res, next) => {
   const contactId = req.params.id;
-  const contact = req.body;
+  const contactUpdate = req.body;
 
-  contactId || next(errorHandler("Please enter a contact ID", 422));
-  (contact && contact.primaryContactNumber) ||
-    next(errorHandler("Please submit valid contact", 422));
+  contactId || next(errorHandler("Please enter a contact ID", 400));
+  contactUpdate || next(errorHandler("Please submit valid contact", 400));
 
   const result = await Contact.updateOne(
     { _id: new ObjectID(contactId) },
     { $set: contact }
   );
-  result.insertedCount === 1
-    ? res.json({ message: "Contact created" })
-    : next(errorHandler("No data inserted"));
+  result.nModified === 1
+    ? res.json({ message: "Contact updated" })
+    : next(errorHandler("No data updated"));
 };
 
 export const deleteContact = async (req, res, next) => {
@@ -108,7 +141,9 @@ export const deleteContact = async (req, res, next) => {
 };
 
 export const deleteAllContacts = async (req, res, next) => {
-  await Contact.deleteMany({});
+  const result = await Contact.deleteMany({});
 
-  res.json({ message: "All contacts deleted" });
+  result.deletedCount > 0
+    ?  res.json({ message: "All contacts deleted" })
+    : next(errorHanlder("No contacts were deleted"));
 };
