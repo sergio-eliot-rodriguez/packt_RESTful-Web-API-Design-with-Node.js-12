@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { ConfigService } from "../services/config.services";
 
-export const connectDb = async () => {
+export const connectDb = async (dbName) => {
   mongoose.connect(
-    `mongodb://${ConfigService.MONGO_LOCALHOST}/contactsdb?retryWrites=true&w=majority`,
+    `mongodb://${ConfigService.MONGO_LOCALHOST}/${dbName}?retryWrites=true&w=majority`,
     {
       useUnifiedTopology: true,
       useCreateIndex: true
@@ -12,5 +12,5 @@ export const connectDb = async () => {
 
   const db = mongoose.connection;
   db.on("open", () => console.log(`Connected to contactsdb database`));
-  db.on("error", err => console.error(err.message));
+  db.on("error", err => console.error(err.message + "IS IT CLOSED?"));
 };

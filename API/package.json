@@ -9,7 +9,7 @@
     "start:dev": "set NODE_ENV=development && node -r esm ./node_modules/nodemon/bin/nodemon.js .",
     "debug": "DEBUG=* node -r esm .",
     "dev": "node -r esm ./node_modules/nodemon/bin/nodemon.js .",
-    "test": "mocha ./test/*"
+    "test": "mocha ./tests/*"
   },
   "author": "",
   "license": "ISC",
@@ -34,5 +34,10 @@
     "mocha": "^8.3.0",
     "nodemon": "^1.19.4",
     "supertest": "^4.0.2"
-  }
+  },
+  "mocha": { 
+    "require": [
+      "esm"
+  ]
+}
 }

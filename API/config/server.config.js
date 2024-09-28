@@ -133,7 +133,7 @@ export class ServerConfig {
 
   async listen() {
     try {
-      await connectDb();
+      await connectDb("contactsdb");
 
       this.app.listen(this.port, () => {
         console.log(`Listening on port: ${this.port}`);
