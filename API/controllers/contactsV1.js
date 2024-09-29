@@ -1,6 +1,7 @@
 import { ObjectID } from "bson";
-import { errorHandler, generateFakeContacts } from "../utils";
+import { errorHandler } from "../utils";
 import { Contact } from "../models";
+import { generateFakeContacts } from "../utils";
 
 export const getContacts = async (req, res) => {
   const contacts = await Contact.find();
@@ -20,7 +21,7 @@ export const getContacts = async (req, res) => {
     html() {
       const html = [
         `<table style="border: 1px solid black;">`,
-        `<th style="border: 1px solid black; background:red;">BEIGN EXECUTED</th>
+        `<th style="border: 1px solid black; background:red;">Contact ID</th>
           <th style="border: 1px solid black; background:black; color:white;">Contact Data</th>
           `
       ];
@@ -28,7 +29,7 @@ export const getContacts = async (req, res) => {
       contacts.forEach(({ _doc }) => {
         let { _id, ...contact } = _doc;
 
-        //reorder properties
+        // reorder properties
         contact = Object.keys(contact)
           .sort()
           .reduce(
@@ -41,6 +42,7 @@ export const getContacts = async (req, res) => {
               lastName: _doc.lastName
             }
           );
+
         html.push(`
               <tr style="border: 1px solid black;">
               <td style="border: 1px solid black; background:yellow;">${_id}</td>
@@ -48,11 +50,11 @@ export const getContacts = async (req, res) => {
                 .map(([key, value]) => {
                   return `<div style="border: solid green 5px;"><p><b>${key}</b>: ${JSON.stringify(
                     value,
-                    function replacer(k, v){
+                    function replacer(k, v) {
                       return k === "_id" ? undefined : v;
                     },
                     4
-                ).replace(/"/g,"")}</p></div>`;
+                  ).replace(/"/g, "")}</p></div>`;
                 })
                 .join("\n")}</td>
               </tr>
@@ -77,8 +79,9 @@ export const getContact = async (req, res, next) => {
 
 export const postContact = async (req, res, next) => {
   const contact = req.body;
-  contact || next(errorHandler("Please submit a valid contact", 400));
-  contact.primaryContactNumber || next(errorHandler("Please submit valid contact", 422));
+  contact || next(errorHandler("Please submit valid contact", 400));
+  contact.primaryContactNumber ||
+    next(errorHandler("Please submit valid contact", 422));
 
   const newContact = new Contact({ ...contact });
   const { _id, _doc } = await newContact.save();
@@ -89,26 +92,18 @@ export const postContact = async (req, res, next) => {
         .set("location", `/contacts/${_id}`)
         .json({ message: "Contact created", data: _doc })
     : next(errorHandler("No contact created"));
-
-  // const result = await Contact.insertOne(contact);
-
-  // result.insertedCount === 1
-  //   ? res.json({ message: "Contact created" })
-  //   : next(errorHandler("No data inserted"));
 };
 
-export const postContactMany = async (req, res, next) => {
+export const postManyContacts = async (req, res, next) => {
   const n = parseInt(req.query.n);
-  n < 100 || next(errorHandler("Please enter a number less than 100", 422));
+  n < 100 || next(errorHandler("Please enter number less than 100", 422));
 
-  const genearatedContacts = await Contact.insertMany(generateFakeContacts(n));
-  console.log(genearatedContacts.length);
+  const generatedContacts = await Contact.insertMany(generateFakeContacts(n));
 
-  res.status(201).json(
-    { 
-      message: `${n} contacts generated`,  
-      locations: genearatedContacts.map(( { _id }) => `/contacts/${_id}`)    
-    });
+  res.status(201).json({
+    message: `${n} contacts generated`,
+    locations: generatedContacts.map(({ _id }) => `/api/v1/contacts/${_id}`)
+  });
 };
 
 export const putContact = async (req, res, next) => {
@@ -120,8 +115,9 @@ export const putContact = async (req, res, next) => {
 
   const result = await Contact.updateOne(
     { _id: new ObjectID(contactId) },
-    { $set: contact }
+    { $set: contactUpdate }
   );
+
   result.nModified === 1
     ? res.json({ message: "Contact updated" })
     : next(errorHandler("No data updated"));
@@ -140,20 +136,20 @@ export const deleteContact = async (req, res, next) => {
     : next(errorHandler("No data deleted"));
 };
 
-export const deleteAllContacts = async (req, res, next) => {
+export const deleteAllContact = async (req, res, next) => {
   const result = await Contact.deleteMany({});
 
   result.deletedCount > 0
-    ?  res.json({ message: "All contacts deleted" })
-    : next(errorHanlder("No contacts were deleted"));
+    ? res.json({ message: "All contacts deleted" })
+    : next(errorHandler("No data deleted"));
 };
 
 export const contactsV1 = {
   getContacts,
   getContact,
   postContact,
-  postContactMany,
+  postManyContacts,
   putContact,
   deleteContact,
-  deleteAllContacts
+  deleteAllContact
 };
