@@ -19,4 +19,4 @@ export const getGroupsForContact = async (req, res, next) => {
   res.json(contact.groups);
 };
 
-export { getGroups, getGroupsForContact };
+export const groupsV1 =  { getGroups, getGroupsForContact };

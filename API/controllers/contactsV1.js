@@ -147,3 +147,13 @@ export const deleteAllContacts = async (req, res, next) => {
     ?  res.json({ message: "All contacts deleted" })
     : next(errorHanlder("No contacts were deleted"));
 };
+
+export const contactsV1 = {
+  getContacts,
+  getContact,
+  postContact,
+  postContactMany,
+  putContact,
+  deleteContact,
+  deleteAllContacts
+};

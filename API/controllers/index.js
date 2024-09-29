@@ -1,10 +1,3 @@
-export {
-    getContacts,
-    getContact,
-    postContact,
-    postContactMany,
-    putContact,
-    deleteContact,
-    deleteAllContacts
-  } from "./contacts";
-  export { getGroups, getGroupsForContact } from "./groups";
+export { contactsV1 } from "./contactsV1";
+export { groupsV1 } from "./groupsV1";
+export { contactsV2 } from "./contactsV2"
