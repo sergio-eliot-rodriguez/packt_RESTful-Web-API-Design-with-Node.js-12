@@ -1,5 +1,7 @@
+export { generateFakeContacts } from "./contact-generator";//17asdfsad
 export { errorHandler } from "./error-handler";
 export { AsyncWrapper } from "./async-wrapper";
-export { generateFakeContacts } from "./contact-generator";
-export { fmtUtils } from "./format.utils";
 export { generateSelf } from "./hateoas.utils";
+import * as fmtUtils from "./format.utils";
+import * as contactsUtils from "./contacts.utils";
+export { fmtUtils, contactsUtils };

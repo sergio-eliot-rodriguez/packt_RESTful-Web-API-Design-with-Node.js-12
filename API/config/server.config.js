@@ -1,33 +1,34 @@
-import Express, { Router } from "express";
+import Express from "express";//3
 import cors from "cors";
 import helmet from "helmet";
-import basicAuth from "express-basic-auth";
-import { ConfigService } from "./config-service";
-import { connectDb } from "./db.config";
+import morgan from "morgan";
+import paginate from "express-paginate";
 
-export class ServerConfig {
+import DbConfig from "./db.config";
+import { ConfigService } from "../services";
+
+
+export default class ServerConfig {
   #userAccounts = {
     admin: "supersecret2"
-  };
-
+  }
   constructor({ port, middlewares, routers }) {
     this.app = Express();
-    this.app.set("env", process.env.NODE_ENV);
+    this.app.set("env", ConfigService.NODE_ENV);
     this.app.set("port", port);
     this.registerCORSMiddleware()
       .registerHelmetMiddleware()
-      .registerBasicAuthMiddleware()
-      .registerJSONMiddleware();
+      .registerMorganMiddleware()
+      .registerJSONMiddleware()
+      .registerExpressPaginateMiddleware();
 
     middlewares &&
       middlewares.forEach(mdlw => {
         this.registerMiddleware(mdlw);
       });
 
-    this.app.get("/", (req, res, next) => {
-      res.json({
-        message: "Server working"
-      });
+    this.app.get("/ping", (req, res, next) => {
+      res.send("pong");
     });
 
     routers &&
@@ -97,15 +98,18 @@ export class ServerConfig {
   }
 
   /**
-   * register Helmet middleware for Security HTTP headers
+   * register Morgan middleware for request logging
    */
-  registerBasicAuthMiddleware() {
-    this.registerMiddleware(
-      basicAuth({
-        users: this.#userAccounts,
-        challenge: true
-      })
-    );
+  registerMorganMiddleware() {
+    this.registerMiddleware(morgan("combined"));
+    return this;
+  }
+
+  /**
+   * register Express Paginate middleware for pagianted data response
+   */
+  registerExpressPaginateMiddleware() {
+    this.registerMiddleware(paginate.middleware(2, 100));
     return this;
   }
 
@@ -124,16 +128,20 @@ export class ServerConfig {
             });
           }
         )
-      : this.registerMiddleware(({ statusCode = 500, message }, req, res, next) => {
-          res.status(statusCode);
-          res.json({ statusCode, message });
-        });
+      : this.registerMiddleware(
+          ({ statusCode = 500, message }, req, res, next) => {
+            res.status(statusCode);
+            res.json({ statusCode, message });
+          }
+        );
     return this;
   }
 
+
   async listen() {
     try {
-      await connectDb("contactsdb");
+      const dbConf = new DbConfig("contactsdb", "images");
+      await dbConf.connectDb();
 
       this.app.listen(this.port, () => {
         console.log(`Listening on port: ${this.port}`);

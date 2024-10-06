@@ -18,5 +18,3 @@ export const getGroupsForContact = async (req, res, next) => {
   });
   res.json(contact.groups);
 };
-
-export const groupsV1 =  { getGroups, getGroupsForContact };

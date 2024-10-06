@@ -1,28 +1,26 @@
+// use aliases to avoid name conflicts//11
 import { contactsV1 as v1 } from "../../controllers";
-
 import { AsyncWrapper } from "../../utils/async-wrapper";
 
+export default router => {
+  // GET /api/v1/contacts
+  router.get("/contacts", AsyncWrapper(v1.getContacts));
 
-export default function(router){
-    // GET /contacts
-    router.get("/contacts", AsyncWrapper(v1.getContacts));
+  // GET /api/v1/contacts/:id
+  router.get("/contacts/:id", AsyncWrapper(v1.getContact));
 
-    // GET /contact/:id
-    router.get("/contacts/:id", AsyncWrapper(v1.getContact));
+  // POST /api/v1/contacts
+  router.post("/contacts", AsyncWrapper(v1.postContact));
 
-    // POST /contacts
-    router.post("/contacts", AsyncWrapper(v1.postContact));
+  // POST /api/v1/contacts/many?n=X
+  router.post("/contacts/many", AsyncWrapper(v1.postManyContacts));
 
-    // POST /contacts/many
-    router.post("/contacts/many", AsyncWrapper(v1.postManyContacts));
+  // PUT /api/v1/contacts/:id
+  router.put("/contacts/:id", AsyncWrapper(v1.putContact));
 
-    // PUT /contacts/:id
-    router.put("/contacts/:id", AsyncWrapper(v1.putContact));
+  // DELETE /api/v1/contacts/:id
+  router.delete("/contacts/:id", AsyncWrapper(v1.deleteContact));
 
-    // DELETE /contacts/:id
-    router.delete("/contacts/:id", AsyncWrapper(v1.deleteContact));
-
-    // DELETE /contacts
-    router.delete("/contacts", AsyncWrapper(v1.deleteAllContact));
-
+  // DELETE /api/v1/contacts
+  router.delete("/contacts", AsyncWrapper(v1.deleteAllContact));
 };

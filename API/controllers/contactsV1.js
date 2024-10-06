@@ -1,10 +1,12 @@
-import { ObjectID } from "bson";
+import { ObjectID } from "bson";//111
 import { errorHandler } from "../utils";
 import { Contact } from "../models";
 import { generateFakeContacts } from "../utils";
 
 export const getContacts = async (req, res) => {
-  const contacts = await Contact.find();
+  const contacts = await Contact.find()
+    .populate("image")
+    .exec();
   res.format({
     // using new object method syntax (instead of json: function() {...})
     json() {
@@ -73,7 +75,9 @@ export const getContact = async (req, res, next) => {
 
   const contact = await Contact.findOne({
     _id: new ObjectID(contactId)
-  });
+  })
+    .populate("image")
+    .exec();
   res.json(contact);
 };
 
@@ -142,14 +146,4 @@ export const deleteAllContact = async (req, res, next) => {
   result.deletedCount > 0
     ? res.json({ message: "All contacts deleted" })
     : next(errorHandler("No data deleted"));
-};
-
-export const contactsV1 = {
-  getContacts,
-  getContact,
-  postContact,
-  postManyContacts,
-  putContact,
-  deleteContact,
-  deleteAllContact
 };

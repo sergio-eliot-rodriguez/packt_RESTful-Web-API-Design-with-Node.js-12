@@ -1,16 +1,21 @@
-import { ServerConfig } from "./config";
-import { redirectRouter, routerV1, routerV2 } from "./routes";
+import { ServerConfig } from "./config";//19
+import {
+  redirectRouter,
+  routerV1,
+  routerV2,
+  //authRouter,
+  //routerV2Docs
+} from "./routes";
 
 async function main() {
-  const PORT = process.env.PORT  || 3001;
+  const PORT = process.env.PORT || 3000;
   const server = new ServerConfig({
     port: PORT,
     // middleware: [],
-     routers: [routerV1, routerV2, redirectRouter]
-  });  
+    routers: [redirectRouter, routerV1, routerV2]
+  });
 
   server.listen();
 }
 
 main();
-
