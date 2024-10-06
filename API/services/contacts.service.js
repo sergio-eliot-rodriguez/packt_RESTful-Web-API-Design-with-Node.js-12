@@ -96,12 +96,41 @@ export default class ContactsService {
    *
    * @param {*} fields
    */
-  async findContacts(fields) {
-    return fields
-      ? await Contact.find()
-          .select(fields)
-          .populate("image")
-      : await Contact.find().populate("image");
+  async findContacts(filter = {}, fields, offset, limit, next) {
+    const options = {
+      limit,
+      page: offset,
+      populate: "image",
+      select: fields
+    }
+
+    const {
+      docs,
+      totalDocs,
+      page,
+      totalPages,
+      hasNextPage,
+      nextPage,
+      hasPrevPage,
+      prevPage,
+      pagingCounter
+    } = await Contact.paginate(filter, options);
+
+    if( offset > totalPages )
+        return next(errorHandler("Page number does not exist", 422));
+
+    return {
+      docs,
+      totalDocs,
+      page,
+      totalPages,
+      hasNextPage,
+      nextPage,
+      hasPrevPage,
+      prevPage,
+      pagingCounter      
+    };
+
   }
 
   /**

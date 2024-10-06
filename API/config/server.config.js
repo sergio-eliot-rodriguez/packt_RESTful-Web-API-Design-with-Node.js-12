@@ -1,9 +1,8 @@
-import Express from "express";//3
+import Express from "express";//31
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import paginate from "express-paginate";
-
 import DbConfig from "./db.config";
 import { ConfigService } from "../services";
 
@@ -21,6 +20,7 @@ export default class ServerConfig {
       .registerMorganMiddleware()
       .registerJSONMiddleware()
       .registerExpressPaginateMiddleware();
+
 
     middlewares &&
       middlewares.forEach(mdlw => {
@@ -105,13 +105,11 @@ export default class ServerConfig {
     return this;
   }
 
-  /**
-   * register Express Paginate middleware for pagianted data response
-   */
+  //* register Express Paginate middleware for pagianted data response
   registerExpressPaginateMiddleware() {
-    this.registerMiddleware(paginate.middleware(2, 100));
-    return this;
+    this.registerMiddleware(paginate.middleware(5,50));
   }
+
 
   /**
    * register the Express Error Handling middleware

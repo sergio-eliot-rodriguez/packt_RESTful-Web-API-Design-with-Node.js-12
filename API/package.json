@@ -24,6 +24,7 @@
     "express-basic-auth": "^1.2.0",
     "express-paginate": "^1.0.0",
     "express-rate-limit": "^5.0.0",
+    "faker": "^4.1.0",
     "helmet": "^3.21.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.13",
@@ -35,7 +36,6 @@
     "passport-jwt": "^4.0.0",
     "pm2": "^4.2.1",
     "rate-limit-redis": "^1.7.0",
-    "faker": "^4.1.0",
     "redis": "^2.8.0",
     "swagger-jsdoc": "^3.5.0",
     "swagger-ui-express": "^4.1.3"

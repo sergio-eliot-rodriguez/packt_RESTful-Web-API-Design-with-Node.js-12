@@ -5,35 +5,46 @@ import DbConfig from "../config/db.config";
 
 const contactService = new ContactService();
 
-export const getBasicContacts = async (req, res) => {
+export const getBasicContacts = async (req, res, next) => {
   const url = `${req.protocol}://${req.hostname}:${req.app.get("port")}`;
 
-  const contacts = await contactService.findContacts({
+  const filter = req.body.filter;
+  const offset = +req.query.offset;
+  const limit = +req.query.limit;
+  const fields = {
     firstName: 1,
     lastName: 1,
     primaryContactNumber: 1,
     primaryEmailAddress: 1,
     image: 1
-  });//1
+  };
 
-  console.log(`Contacts received from: ${url}`);
-  console.log("Received contacts:");
-  console.log(JSON.stringify(contacts));
+  const contacts = await contactService.findContacts(
+    filter,
+    fields,
+    offset,
+    limit,
+    next,
+  );
 
-  res.format({
-    json() {
-      res.json(contactService.generateLinkedContacts(contacts, url));
-    },
-    html() {
-      res.send(contactService.generateHTMLContacts(contacts));
-    },
-    csv() {
-      res.send(contactService.generateCSVContacts(contacts));
-    },
-    text() {
-      res.send(contactService.generateTextContacts(contacts));
-    }
-  });
+  contacts &&
+    res.format({
+      json() {
+        res.json({ 
+          ...contacts,
+          docs: contactService.generateLinkedContacts(contacts.docs, url)
+        })
+      },
+      html() {
+        res.send(contactService.generateHTMLContacts(contacts.docs));
+      },
+      csv() {
+        res.send(contactService.generateCSVContacts(contacts.docs));
+      },
+      text() {
+        res.send(contactService.generateTextContacts(contacts.docs));
+      }
+    });
 };
 
 export const getContacts = contactsV1.getContacts;
