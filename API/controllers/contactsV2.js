@@ -8,15 +8,17 @@ const contactService = new ContactService();
 export const getBasicContacts = async (req, res) => {
   const url = `${req.protocol}://${req.hostname}:${req.app.get("port")}`;
 
-  console.log(url);
-
   const contacts = await contactService.findContacts({
     firstName: 1,
     lastName: 1,
     primaryContactNumber: 1,
     primaryEmailAddress: 1,
     image: 1
-  });
+  });//1
+
+  console.log(`Contacts received from: ${url}`);
+  console.log("Received contacts:");
+  console.log(JSON.stringify(contacts));
 
   res.format({
     json() {

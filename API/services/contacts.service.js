@@ -11,18 +11,31 @@ export default class ContactsService {
    *
    * @param {object[]} contacts
    * @param {string} url
-   */
-  generateLinkedContacts(contacts, url) {
-    return {
-      data: contacts.map(contact => ({
-        data: contact.toJSON(),
-        links: generateSelf({
-          entity: contact.toJSON(),
-          url
-        })
-      })),
+   *///1
+  generateLinkedContacts(contacts, url) {    
+    console.log(`==========START OF generateLinkedContacts=============`);
+    console.log(`url: ${url}`);
+    console.log("contacts:");
+    console.log(JSON.stringify(contacts));
+
+
+    const data = contacts.map(contact => ({
+      data: contact.toJSON(),
+      links: generateSelf({
+        url,
+        entity: contact.toJSON()
+      })
+    }));
+
+    console.log("generated data:");
+    console.log(JSON.stringify(data));
+    console.log(`==========END OF generateLinkedContacts=============`);
+    const linkedContacts = {
+      data,
       links: generateSelf({ url })
     };
+
+    return linkedContacts;
   }
 
   /**

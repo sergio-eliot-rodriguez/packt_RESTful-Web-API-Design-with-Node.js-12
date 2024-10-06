@@ -11,7 +11,9 @@ export const generateSelf = ({ url, entity }) => {//14
       rel: "self"
     }
   ];
-
+  console.info("hateoas.generateSelf");
+  console.info(url);  
+  console.info(JSON.stringify(entity));
   if (entity) {
     const selfRef = [
       ...self,
@@ -31,7 +33,21 @@ export const generateSelf = ({ url, entity }) => {//14
         rel: "image"
       }
     ];    
-    return selfRef;
+
+    const imageRef = [
+      {
+        href: `${url}/api/v2/contacts/${entity._id}/image`,
+        method: "GET",
+        rel: "image"      
+      },
+      {
+        href: `${url}/api/v2/contacts/${entity._id}/image`,
+        method: "DELETE",
+        rel: "image"      
+      }      
+    ];
+
+    return entity.image ? [...selfRef, ...imageRef] : selfRef;
   }
   return self;
 };
