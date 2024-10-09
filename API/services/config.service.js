@@ -7,7 +7,7 @@ export default class ConfigService { //12
   
 
   static get(name) {
-    return process.env[name];
+    return process.env[name].trim();
   }
 }
 /*

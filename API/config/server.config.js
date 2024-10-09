@@ -1,34 +1,34 @@
-import Express from "express";//31
+import Express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import paginate from "express-paginate";
-import DbConfig from "./db.config";
-import { ConfigService } from "../services";
 
+import DbConfig from "./db.config";
+import { ConfigService, CacheService } from "../services";
+import { RateLimiterConfig } from ".";
 
 export default class ServerConfig {
-  #userAccounts = {
-    admin: "supersecret2"
-  }
   constructor({ port, middlewares, routers }) {
     this.app = Express();
     this.app.set("env", ConfigService.NODE_ENV);
     this.app.set("port", port);
     this.registerCORSMiddleware()
       .registerHelmetMiddleware()
+      .registerRateLimiter()
       .registerMorganMiddleware()
       .registerJSONMiddleware()
       .registerExpressPaginateMiddleware();
-
 
     middlewares &&
       middlewares.forEach(mdlw => {
         this.registerMiddleware(mdlw);
       });
 
-    this.app.get("/ping", (req, res, next) => {
-      res.send("pong");
+    this.app.get("/", (req, res, next) => {
+      res.json({
+        message: "Server working"
+      });
     });
 
     routers &&
@@ -105,11 +105,36 @@ export default class ServerConfig {
     return this;
   }
 
-  //* register Express Paginate middleware for pagianted data response
+  /**
+   * register Express Paginate middleware for pagianted data response
+   */
   registerExpressPaginateMiddleware() {
-    this.registerMiddleware(paginate.middleware(5,50));
+    this.registerMiddleware(paginate.middleware(2, 100));
+    return this;
   }
 
+  /**
+   * Register Rate Limiter middleware to prevent Denial of Service (DoS) attacks
+   */
+  registerRateLimiter() {
+    // set global cache service
+    global.redisCacheService = new CacheService({
+      host: ConfigService.get("REDIS_HOST"),
+      port: ConfigService.get("REDIS_PORT"),
+      password: ConfigService.get("REDIS_PASSWORD")
+    });
+
+    const rateLimitConf = new RateLimiterConfig({
+      client: global.redisCacheService.redisRateLimitClient,
+      maxRequests: ConfigService.get("RATE_LIMIT_MAX_REQUESTS"),
+      windowMs: ConfigService.get("RATE_LIMIT_WINDOW_MS")
+    });
+
+    const limiter = rateLimitConf.redisStoreLimiter;
+
+    this.registerMiddleware(limiter);
+    return this;
+  }
 
   /**
    * register the Express Error Handling middleware
@@ -134,7 +159,7 @@ export default class ServerConfig {
         );
     return this;
   }
-
+  
 
   async listen() {
     try {

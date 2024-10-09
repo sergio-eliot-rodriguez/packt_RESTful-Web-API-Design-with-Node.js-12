@@ -10,7 +10,7 @@
     "start": "node -r esm .",
     "preinstall": "npm i -g pm2",
     "start:prod": "pm2-runtime ecosystem.config.json",
-    "start:dev": "set NODE_ENV=development && node -r esm ./node_modules/nodemon/bin/nodemon.js .",
+    "start:dev": "nvm use  12.10.0 ; set NODE_ENV=development && node -r esm ./node_modules/nodemon/bin/nodemon.js .",
     "debug": "DEBUG=* node -r esm .",
     "test": "mocha ./tests/*",
     "docker:build": "sudo docker build . -t"

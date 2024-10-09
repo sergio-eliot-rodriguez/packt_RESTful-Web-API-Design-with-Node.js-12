@@ -103,6 +103,10 @@ export default class CacheService {
     return await this.#asyncExpire(usId, 0);
   }
 
+  get redisRateLimitClient() {
+    return this.#client;
+  }
+  
   async purgeCache(userId, seconds) {
     const usId = this.#getUserKey(userId);
     return await this.#asyncExpire(usId, seconds);
